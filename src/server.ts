@@ -74,3 +74,18 @@ export class Server {
 
 const server = new Server();
 server.run()
+
+// test message decoding
+const data = {
+    id: 2,
+    type: 'ping',
+    payload: {
+        message: 'PING',
+        timestamps: Date.now().toString()
+    }
+}
+
+const serialized = server.serializeMessage(data);
+const decoded = server.decode(serialized);
+
+console.log(decoded)

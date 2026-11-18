@@ -1,9 +1,9 @@
 export interface BaseMessage {
+    type: string;
     id: number;
 }
 
 export interface PongMessage extends BaseMessage {
-    type: 'pong',
     payload: {
         message: string;
         timestamps: string;
@@ -11,7 +11,6 @@ export interface PongMessage extends BaseMessage {
 }
 
 export interface PingMessage extends BaseMessage {
-    type: 'PING',
     payload: {
         message: string;
         timestamps: string;
@@ -19,7 +18,6 @@ export interface PingMessage extends BaseMessage {
 }
 
 export interface ErrorMessage {
-    type: 'ERROR',
     payload: {
         message: string;
         code: string;
