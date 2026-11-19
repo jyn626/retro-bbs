@@ -17,3 +17,9 @@ client.on('connect', () => {
         }
     }))
 })
+
+client.on('data', (data) => {
+    console.log('Received from server.')
+
+    console.log(data.toString())
+})

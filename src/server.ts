@@ -1,6 +1,7 @@
 import net from 'net'
 import { ProtocolMessage } from './protocol';
 import { ProtocolSchema } from './validation';
+import { messageHandler } from './message.handler';
 
 export class Server {
     constructor() { }
@@ -58,6 +59,9 @@ export class Server {
 
                 const decoded = this.decode(data.toString())
                 console.log(decoded)
+
+                // handle message
+                messageHandler(decoded, socket)
             })
 
             socket.on('end', () => {

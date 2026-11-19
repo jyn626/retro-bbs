@@ -17,7 +17,7 @@ export interface PingMessage extends BaseMessage {
     },
 }
 
-export interface ErrorMessage {
+export interface ErrorMessage extends BaseMessage {
     payload: {
         message: string;
         code: string;
