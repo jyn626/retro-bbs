@@ -43,6 +43,14 @@ const handleLogin = (
             payload.password == account.password
         ) {
             clientManager.add(socket)
+            socket.write(JSON.stringify({
+                type: 'MESSAGE',
+                id: data.id,
+                payload: {
+                    message: 'Authenticated successfully.',
+                    timestamps: Date.now().toString()
+                }
+            }))
         } else {
             handleError(socket, data.id, 'ERROR invalid credentials')
         }

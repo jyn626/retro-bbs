@@ -19,14 +19,19 @@ export class Server {
         }
     }
 
-    decode(raw: string): ProtocolMessage {
-        const parsed = this.parseMessage(raw)
+    decode(raw: string): ProtocolMessage | undefined {
+        try {
+            console.log(raw)
+            const parsed = this.parseMessage(raw)
+            const result = ProtocolSchema.safeParse(parsed)
 
-        const result = ProtocolSchema.safeParse(parsed)
+            if (!result.success) throw new Error('ERROR Invalid Protocol Message')
 
-        if (!result.success) throw new Error('ERROR Invalid Protocol Message')
+            return result.data as ProtocolMessage
+        } catch (error) {
+            console.error(error.message)
+        }
 
-        return result.data as ProtocolMessage
     }
 
     run() {
@@ -48,10 +53,6 @@ export class Server {
                 socket.destroy()
             })
 
-            // send message from server to client
-            socket.write("Welcome to BBS")
-
-            // receives messages from client to server
             socket.on('data', (data) => {
                 // console.log(`Data: ${data.toString()}`)
                 // console.log(data)
@@ -66,11 +67,14 @@ export class Server {
                 // LOGIN
                 // REGISTER
                 // ...
-                messageHandler(
-                    decoded,
-                    socket,
-                    this.clientManager
-                )
+
+                if (decoded) {
+                    messageHandler(
+                        decoded,
+                        socket,
+                        this.clientManager
+                    )
+                }
             })
 
             socket.on('end', () => {
