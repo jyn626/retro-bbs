@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 const PingSchema = z.object({
-    type: z.literal('ping'),
+    type: z.literal('PING'),
     id: z.number(),
     payload: z.object({
         message: z.string(),
@@ -9,17 +9,16 @@ const PingSchema = z.object({
     })
 })
 
-const PongSchema = z.object({
-    type: z.literal('pong'),
+const LoginSchema = z.object({
+    type: z.literal('LOGIN'),
     id: z.number(),
     payload: z.object({
-        message: z.string(),
-        timestamps: z.string(),
+        username: z.string(),
+        password: z.string()
     })
 })
-
 
 export const ProtocolSchema = z.discriminatedUnion("type", [
     PingSchema,
-    PongSchema
+    LoginSchema
 ])

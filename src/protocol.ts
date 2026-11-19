@@ -17,6 +17,13 @@ export interface PingMessage extends BaseMessage {
     },
 }
 
+export interface LoginMessage extends BaseMessage {
+    payload: {
+        username: string;
+        password: string;
+    }
+}
+
 export interface ErrorMessage extends BaseMessage {
     payload: {
         message: string;
@@ -28,3 +35,4 @@ export type ProtocolMessage =
     | PongMessage
     | ErrorMessage
     | PingMessage
+    | LoginMessage

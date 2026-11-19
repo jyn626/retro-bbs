@@ -2,9 +2,10 @@ import net from 'net'
 import { ProtocolMessage } from './protocol';
 import { ProtocolSchema } from './validation';
 import { messageHandler } from './message.handler';
+import { ClientManager } from './client.manager';
 
 export class Server {
-    constructor() { }
+    private clientManager = new ClientManager();
 
     serializeMessage(message: ProtocolMessage): string {
         return JSON.stringify(message)
@@ -61,7 +62,15 @@ export class Server {
                 console.log(decoded)
 
                 // handle message
-                messageHandler(decoded, socket)
+                // PING
+                // LOGIN
+                // REGISTER
+                // ...
+                messageHandler(
+                    decoded,
+                    socket,
+                    this.clientManager
+                )
             })
 
             socket.on('end', () => {
