@@ -51,7 +51,13 @@ export class Server {
 
             // receives messages from client to server
             socket.on('data', (data) => {
-                console.log(`Data: ${data.toString()}`)
+                // console.log(`Data: ${data.toString()}`)
+                // console.log(data)
+                console.log(data.toString())
+                // const parsed = this.parseMessage(this.serializeMessage(data))
+
+                const decoded = this.decode(data.toString())
+                console.log(decoded)
             })
 
             socket.on('end', () => {
