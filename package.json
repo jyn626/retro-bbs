@@ -6,12 +6,14 @@
   "scripts": {
     "test": "jest",
     "dev": "tsx --watch src/server.ts",
-    "client": "tsx --watch src/client.ts"
+    "client": "tsx --watch src/client.ts",
+    "screen": "tsx --watch src/ui/main.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/blessed": "^0.1.27",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.6",
     "jest": "^30.5.2",
@@ -21,6 +23,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "blessed": "^0.1.81",
     "zod": "^4.6.7"
   }
 }
