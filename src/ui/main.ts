@@ -87,7 +87,6 @@ const usernameInput = blessed.textbox({
     width: '90%',
     height: 3,
     border: 'line',
-    inputOnFocus: true,
     style: {
         border: { fg: 'cyan' },
         focus: { border: { fg: 'green' } }
@@ -95,7 +94,7 @@ const usernameInput = blessed.textbox({
 
     mouse: true,
     keys: true,
-    input: true
+    inputOnFocus: true,
 })
 
 
@@ -105,16 +104,50 @@ const passwordInput = blessed.textbox({
   name: 'password',
   top: 6,
   left: 2,
-    height: 3,
+  height: 3,
   width: '90%',
   censor: true, // Masks characters with '*'
-  inputOnFocus: true,
   border: { type: 'line' },
-    style: {
-        border: { fg: 'cyan' },
-        focus: { border: { fg: 'green' } }
-  }
+  style: {
+      border: { fg: 'cyan' },
+      focus: { border: { fg: 'green' } }
+    },
+    mouse: true,
+    key: true,
+    inputOnFocus: true,
 });
+
+const loginSubmitBtn = blessed.button({
+  parent: loginForm,
+  mouse: true,
+  keys: true,
+  shrink: true,
+  name: 'submit',
+  content: 'Login',
+  left: 'center',
+  top: 10,
+  padding: { left: 2, right: 2},
+  style: {
+    bg: 'blue',
+    fg: 'white',
+    focus: {
+      bg: 'green'
+    },
+    hover: {
+      bg: 'green'
+    }
+  }
+})
+
+loginSubmitBtn.on('press', () => {
+  loginForm.submit()
+})
+
+loginForm.on('submit', (data) => {
+  console.log(data)
+})
+
+
 
 // Handle selection
 menu.on("select", (_item, index) => {
@@ -122,6 +155,7 @@ menu.on("select", (_item, index) => {
     case 0:
       // status.setContent("Login selected");
           loginScreen.show();
+          usernameInput.focus()
       break;
     case 1:
       status.setContent("Register selected");
