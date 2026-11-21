@@ -76,6 +76,7 @@ const loginForm = blessed.form({
         border: { fg: 'cyan' }
     }
 })
+
 // --- text inputs ---
 // username input
 const usernameInput = blessed.textbox({
@@ -102,12 +103,12 @@ const passwordInput = blessed.textbox({
   parent: loginForm,
   label: 'Password',
   name: 'password',
-  top: 6,
-  left: 2,
   height: 3,
+  top: 6,
+  left: 3,
   width: '90%',
   censor: true, // Masks characters with '*'
-  border: { type: 'line' },
+  border: 'line',
   style: {
       border: { fg: 'cyan' },
       focus: { border: { fg: 'green' } }
@@ -139,14 +140,87 @@ const loginSubmitBtn = blessed.button({
   }
 })
 
-loginSubmitBtn.on('press', () => {
-  loginForm.submit()
+
+
+const registrationScreen = blessed.box({
+  parent: screen,
+  width: '100%',
+  height: '100%',
+  content: 'Welcome to the REGISTRATION SCREEN. Press key 1 to go back to menu.',
+  border: 'line',
+  hidden: true
 })
 
-loginForm.on('submit', (data) => {
-  console.log(data)
+
+const registrationForm = blessed.form({
+  parent: registrationScreen,
+  keys: true,
+  height: 15,
+  left: 'center',
+  top: 'center',
+  label: 'Registration',
+  border: 'line',
+  style: {
+    border: { fg: 'cyan' }
+  }
 })
 
+
+const registrationUsernameInput = blessed.textbox({
+  parent: registrationForm,
+  label: 'Username',
+  name: 'username',
+  height: 3,
+  top: 2,
+  left: 3,
+  width: '90%',
+  border: 'line',
+  style: {
+    border: { fg: 'cyan' },
+    focus: { border: { fg: 'green' }}
+  },
+  mouse: true,
+  keys: true,
+  inputOnFocus: true
+})
+
+const registrationPasswordInput = blessed.textbox({
+  parent: registrationForm,
+  label: 'Password',
+  name: 'password',
+  height: 3,
+  top: 6,
+  left: 3,
+  censor: true,
+  width: '90%',
+  border: 'line',
+  style: {
+    border: { fg: 'cyan' },
+    focus: { border: { fg: 'green' }}
+  },
+  mouse: true,
+  keys: true,
+  inputOnFocus: true
+})
+
+const registrationSubmitBtn = blessed.button({
+  parent: registrationForm,
+  mouse: true,
+  keys: true,
+  shrink: true,
+  name: 'submit',
+  content: 'Register',
+  left: 'center',
+  top: 10,
+  padding: { left: 2, right: 2},
+  style: {
+    bg: 'blue',
+    fg: 'white',
+    focus: {
+      bg: 'green'
+    }
+  }
+})
 
 
 // Handle selection
@@ -158,7 +232,8 @@ menu.on("select", (_item, index) => {
           usernameInput.focus()
       break;
     case 1:
-      status.setContent("Register selected");
+          registrationScreen.show()
+          registrationUsernameInput.focus()
       break;
     case 2:
       shutdown();
@@ -168,6 +243,14 @@ menu.on("select", (_item, index) => {
   screen.render();
 });
 
+loginSubmitBtn.on('press', () => {
+  loginForm.submit()
+})
+
+loginForm.on('submit', (data) => {
+  console.log(data)
+})
+
 function shutdown() {
   screen.destroy();
   process.exit(0);
@@ -176,8 +259,10 @@ function shutdown() {
 screen.key(["escape", "C-c"], shutdown);
 screen.key(['1'], () => {
     loginScreen.hide()
+    registrationScreen.hide()
     menu.show()
 
+    menu.focus()
     screen.render()
 })
 
