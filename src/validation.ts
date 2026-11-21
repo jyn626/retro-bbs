@@ -18,7 +18,17 @@ const LoginSchema = z.object({
     })
 })
 
+const RegisterSchema = z.object({
+    type: z.literal('REGISTER'),
+    id: z.number(),
+    payload: z.object({
+        username: z.string(),
+        password: z.string()
+    })
+})
+
 export const ProtocolSchema = z.discriminatedUnion("type", [
     PingSchema,
-    LoginSchema
+    LoginSchema,
+    RegisterSchema
 ])

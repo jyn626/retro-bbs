@@ -77,6 +77,10 @@ export const messageHandler = (
         case 'LOGIN':
             handleLogin(socket, data, clientManager)
             break;
+      case 'REGISTER':
+            console.log('Client is registered')
+            console.log(data)
+            break;
         default:
             socket.write('PONG\n')
     }

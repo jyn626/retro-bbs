@@ -1,5 +1,13 @@
 import * as blessed from 'blessed'
+import { client } from '../client'
 
+interface BaseAuthSchema {
+  username: string;
+  password: string;
+}
+
+interface LoginSchema extends BaseAuthSchema {}
+interface RegisterSchema extends BaseAuthSchema {}
 
 const screen = blessed.screen({
   smartCSR: true,
@@ -250,6 +258,26 @@ loginSubmitBtn.on('press', () => {
 loginForm.on('submit', (data) => {
   console.log(data)
 })
+
+
+registrationSubmitBtn.on('press', () => {
+  registrationForm.submit()
+})
+
+registrationForm.on('submit', (data: RegisterSchema) => {
+  const requestPayload = {
+      id: Math.floor(Math.random() * 100),
+      type: 'REGISTER',
+      payload: {
+        username: data.username,
+        password: data.password
+      }
+  }
+  const serialized = JSON.stringify(requestPayload);
+
+  client.write(serialized);
+})
+
 
 function shutdown() {
   screen.destroy();
