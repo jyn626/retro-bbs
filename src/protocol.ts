@@ -25,6 +25,7 @@ export interface LoginMessage extends BaseMessage {
 }
 
 export interface RegisterMessage extends BaseMessage {
+  type: "REGISTER",
     payload: {
         username: string;
         password: string;
@@ -43,3 +44,4 @@ export type ProtocolMessage =
     | ErrorMessage
     | PingMessage
     | LoginMessage
+    | RegisterMessage
