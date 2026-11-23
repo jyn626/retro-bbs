@@ -1,5 +1,5 @@
 import { Socket } from "node:net";
-import { ProtocolMessage, RegisterMessage } from "./protocol";
+import { LoginMessage, ProtocolMessage, RegisterMessage, ResponseMessage } from "./protocol";
 import { ClientManager } from "./client.manager";
 import { db, User } from './db'
 import { hashString } from './hash'
@@ -28,9 +28,9 @@ const handleError = (socket: Socket, id: number, message: string) => {
 
 const handleLogin = (
     socket: Socket,
-    data: ProtocolMessage,
+    data: LoginMessage,
     clientManager: ClientManager
-) => {
+) : ResponseMessage | undefined => {
     // ! TODO: implement a database to store account\
     // ! for now this account is TEMPORARY
     const account = {
@@ -40,20 +40,25 @@ const handleLogin = (
     const { payload } = data;
 
     // type narrowing ProtocolMessage, so we'll get the LoginMessage Type
-    if ("username" in payload) {
+    if ("username" in data.payload && "password" in data.payload) {
         if (
             payload.username == account.username &&
             payload.password == account.password
         ) {
             clientManager.add(socket)
-            socket.write(JSON.stringify({
-                type: 'MESSAGE',
+
+            const response: ResponseMessage = {
+                type: 'RESPONSE',
                 id: data.id,
                 payload: {
                     message: 'Authenticated successfully.',
                     timestamps: Date.now().toString()
                 }
-            }))
+            }
+
+            socket.write(JSON.stringify(response))
+
+            return response;
         } else {
             handleError(socket, data.id, 'ERROR invalid credentials')
         }
@@ -63,14 +68,17 @@ const handleLogin = (
 
 }
 
-const handleRegister = async (data: RegisterMessage) => {
+const handleRegister = async (
+    socket: Socket,
+    data: RegisterMessage
+): Promise<ResponseMessage | undefined>  => {
   try {
-      if ("username" in data && "password" in data.payload) {
+      if ("username" in data.payload && "password" in data.payload) {
         // extract credentials
         const { username, password } = data.payload;
 
         // check if username already exists
-        const getUserByUsername = db.prepare('SELECT FROM users WHERE username = ?')
+        const getUserByUsername = db.prepare('SELECT * FROM users WHERE username = ?')
         const result = getUserByUsername.get(username) as User | undefined
 
         if (result !== undefined) {
@@ -82,10 +90,21 @@ const handleRegister = async (data: RegisterMessage) => {
 
         // store the new user
         const insertUser = db.prepare('INSERT INTO users (username, password) VALUES (?,?)');
-        const storeUser = insertUser.run(username, hashedPassword)
-
-
+        insertUser.run(username, hashedPassword)
         console.log('User registered successfully.')
+
+        const response: ResponseMessage = {
+            type: 'RESPONSE',
+            id: data.id,
+            payload: {
+                message: 'Registered successfully.',
+                timestamps: Date.now().toString()
+            }
+        }
+
+        socket.write(JSON.stringify(response))
+
+        return response;
       }
 
   } catch (error) {
@@ -114,9 +133,10 @@ export const messageHandler = (
             handleLogin(socket, data, clientManager)
             break;
       case 'REGISTER':
-            handleRegister(data)
+            // TODO: solve the error here
+            handleRegister(socket, data)
             break;
         default:
             socket.write('PONG\n')
-    }
+}
 }

@@ -1,9 +1,9 @@
 export interface BaseMessage {
-    type: string;
     id: number;
 }
 
 export interface PongMessage extends BaseMessage {
+    type: "PONG",
     payload: {
         message: string;
         timestamps: string;
@@ -11,6 +11,7 @@ export interface PongMessage extends BaseMessage {
 }
 
 export interface PingMessage extends BaseMessage {
+    type: "PING",
     payload: {
         message: string;
         timestamps: string;
@@ -18,6 +19,7 @@ export interface PingMessage extends BaseMessage {
 }
 
 export interface LoginMessage extends BaseMessage {
+    type: "LOGIN",
     payload: {
         username: string;
         password: string;
@@ -26,13 +28,22 @@ export interface LoginMessage extends BaseMessage {
 
 export interface RegisterMessage extends BaseMessage {
   type: "REGISTER",
+  payload: {
+    username: string;
+    password: string;
+  }
+}
+
+export interface ResponseMessage extends BaseMessage {
+    type: "RESPONSE",
     payload: {
-        username: string;
-        password: string;
-      }
+        message: string;
+        timestamps: string;
     }
+}
 
 export interface ErrorMessage extends BaseMessage {
+    type: "ERROR",
     payload: {
         message: string;
         code: string;
@@ -45,3 +56,4 @@ export type ProtocolMessage =
     | PingMessage
     | LoginMessage
     | RegisterMessage
+    | ResponseMessage
