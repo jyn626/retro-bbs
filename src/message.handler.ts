@@ -4,6 +4,7 @@ import { ClientManager } from "./client.manager";
 import { db, User } from './db'
 import { hashString } from './hash'
 import { RegisterSchema } from "./validation";
+import { createJsonLineReader, sendJson } from "./framing";
 
 const handlePing = (socket: Socket, id: number) => {
     socket.write(JSON.stringify({
@@ -13,7 +14,7 @@ const handlePing = (socket: Socket, id: number) => {
             message: 'PONG',
             timestamps: Date.now().toString()
         }
-    }))
+    }) + '\n')
 }
 
 const handleError = (socket: Socket, id: number, message: string) => {
@@ -24,7 +25,7 @@ const handleError = (socket: Socket, id: number, message: string) => {
             message,
             timestamps: Date.now().toString()
         }
-    }))
+    }) + '\n')
 }
 
 const handleLogin = (
@@ -57,7 +58,7 @@ const handleLogin = (
                 }
             }
 
-            socket.write(JSON.stringify(response))
+            socket.write(JSON.stringify(response) + '\n')
 
             return response;
         } else {
@@ -115,8 +116,8 @@ const handleRegister = async (
             }
         }
 
-        socket.write(JSON.stringify(response))
-
+        // send response to client
+        sendJson(socket, response)
         return response;
       }
 
@@ -130,26 +131,37 @@ const handleRegister = async (
 
 // TODO: complete all message types
 export const messageHandler = (
-    data: ProtocolMessage,
     socket: Socket,
     clientManager: ClientManager
     ) => {
     // handle message base on its type
-    const type = data.type;
 
-    switch (type) {
-        case 'PING':
-            // socket.write('PONG\n')
-            handlePing(socket, data.id)
-            break;
-        case 'LOGIN':
-            handleLogin(socket, data, clientManager)
-            break;
-      case 'REGISTER':
-            // TODO: solve the error here
-            handleRegister(socket, data)
-            break;
-        default:
-            socket.write('PONG\n')
-}
+    createJsonLineReader(
+        socket,
+        (data: ProtocolMessage) => {
+            console.log('Client received:', data);
+            const type = data.type;
+            switch (type) {
+                case 'PING':
+                    // socket.write('PONG\n')
+                    handlePing(socket, data.id)
+                    break;
+                case 'LOGIN':
+                    handleLogin(socket, data, clientManager)
+                    break;
+              case 'REGISTER':
+                    // TODO: solve the error here
+                    handleRegister(socket, data)
+                    break;
+                default:
+                    socket.write('PONG\n')
+            }
+        },
+
+        (err, rawLine) => {
+            console.error('Invalid JSON from server:', err.message, '| Line:', rawLine);
+        }
+    )
+
+
 }

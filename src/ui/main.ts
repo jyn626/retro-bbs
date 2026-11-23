@@ -231,6 +231,20 @@ const registrationSubmitBtn = blessed.button({
 })
 
 
+const message = blessed.message({
+    parent: screen,
+    top: 'center',
+    left: 'center',
+    width: 'shrink',
+    height: 'shrink',
+    border: 'line',
+    tags: true,
+    padding: 1,
+    hidden: true
+})
+
+message.display('HOHOOHO', 3);
+
 // Handle selection
 menu.on("select", (_item, index) => {
   switch (index) {
@@ -275,7 +289,7 @@ registrationForm.on('submit', (data: RegisterSchema) => {
   }
   const serialized = JSON.stringify(requestPayload);
 
-  client.write(serialized);
+  client.write(serialized + '\n');
 })
 
 
