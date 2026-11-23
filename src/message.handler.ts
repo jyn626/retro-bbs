@@ -3,6 +3,7 @@ import { LoginMessage, ProtocolMessage, RegisterMessage, ResponseMessage } from 
 import { ClientManager } from "./client.manager";
 import { db, User } from './db'
 import { hashString } from './hash'
+import { RegisterSchema } from "./validation";
 
 const handlePing = (socket: Socket, id: number) => {
     socket.write(JSON.stringify({
@@ -76,6 +77,18 @@ const handleRegister = async (
       if ("username" in data.payload && "password" in data.payload) {
         // extract credentials
         const { username, password } = data.payload;
+
+        // if (!username || !password) {
+        //       throw new Error('ERROR missing required fields.')
+        // }
+
+        // validate with zod
+          const validationResult = RegisterSchema.safeParse(data);
+
+        if (!validationResult.success) {
+            // TODO: make error message human readable
+            throw new Error(validationResult.error.flatten().fieldErrors.toString())
+        }
 
         // check if username already exists
         const getUserByUsername = db.prepare('SELECT * FROM users WHERE username = ?')
